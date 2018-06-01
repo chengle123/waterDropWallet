@@ -1,0 +1,228 @@
+*{
+    margin:0;
+    padding:0;
+    list-style: none;
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+}
+html,
+body,
+#app,
+.app,
+.content .left,
+.content .right{
+    height:100%;
+}
+body{
+    background-color: rgb(40, 45, 47);
+    font-size: 14px;
+}
+.h1{
+    font-size: 20px;
+}
+.h2{
+    font-size: 18px;
+}
+.h3{
+    font-size: 16px;
+}
+.contentBox{
+    padding: 15px;
+}
+.widget{
+    padding:10px;
+    border-width: 2px 1px 1px;
+    border-style: solid;
+    border-color: rgb(49, 54, 57) rgb(51, 57, 60) rgb(51, 57, 60);
+    background: rgb(75, 83, 87);
+}
+.widget-head {
+    width: 100%;
+    padding: 15px;
+    border-bottom: 1px solid #3f4649;
+}
+.widget-body {
+    padding: 13px 15px;
+    width: 100%;
+}
+.widget-body .el-form-item__label{
+    color:#fff;
+    font-size: 15px;
+}
+.widget-body .tpl_form_line_small_title{
+    color: #999;
+    font-size: 12px;
+}
+.widget-body input{
+    background: rgb(75, 83, 87);
+    color:#fff;
+}
+.widget-body .el-transfer p{
+    padding:0;
+    padding-left: 15px;
+}
+.widget-body .el-transfer-panel,
+.widget-body .el-transfer-panel__header{
+    background: rgb(75, 83, 87);
+}
+.widget-body .el-transfer-panel .el-transfer-panel__header .el-checkbox .el-checkbox__label,
+.widget-body .el-transfer-panel__item.el-checkbox{
+    color:#fff
+}
+.content{
+    height: calc(100% - 61px);
+}
+.content .left{
+    margin-left:0;
+    overflow: hidden;
+    transition:  0.3s;
+}
+.content .left.collapse{
+    margin-left:-100%;
+}
+.content .left .sidebar-nav{
+    height: 100%;
+    overflow: auto;
+}
+.buttonBox{
+    padding:20px 0 10px 0;
+    border-bottom:1px solid #404448;
+    text-align: center;
+    background: rgb(31, 34, 36);
+}
+.buttonBox .el-button{
+    margin-bottom: 10px;
+}
+.header{
+    background: rgb(47, 54, 56);
+}
+.header .el-dropdown{
+    margin-right:10px;
+    padding:10px 0;
+}
+.header .el-dropdown .el-dropdown-link{
+    color: #909399;
+}
+.header .el-dropdown-menu__item a{
+    color: #606266;
+}
+.right{
+    background: rgb(58, 65, 68);
+    color: #fff;
+    overflow: hidden;
+}
+.right > div{
+    height:100%;
+    overflow: auto;
+}
+.floatRight{
+    float: right;
+}
+.floatLeft{
+    float: left;
+}
+.sidebar-nav {
+list-style-type: none;
+padding: 0;
+margin: 0;
+}
+.sidebar-nav-sub {
+display: none;
+}
+.sidebar-nav-sub .sidebar-nav-link {
+font-size: 12px;
+padding-left: 30px;
+}
+.sidebar-nav-sub .sidebar-nav-link a {
+font-size: 12px;
+padding-left: 0;
+}
+.sidebar-nav-sub .sidebar-nav-link-logo {
+margin-right: 8px;
+width: 20px;
+font-size: 16px;
+}
+.sidebar-nav-heading {
+padding: 24px 17px;
+font-size: 15px;
+font-weight: 500;
+}
+.sidebar-nav-heading-info {
+font-size: 12px;
+color: #868E8E;
+padding-left: 10px;
+}
+.sidebar-nav-link-logo {
+margin-right: 8px;
+width: 20px;
+font-size: 16px;
+}
+.sidebar-nav-link {
+color: #fff;
+}
+.sidebar-nav-link a {
+display: block;
+color: #868E8E;
+padding: 10px 17px;
+border-left: #282d2f 3px solid;
+font-size: 14px;
+cursor: pointer;
+}
+.sidebar-nav-link a.active {
+cursor: pointer;
+border-left: #1CA2CE 3px solid;
+color: #fff;
+}
+.sidebar-nav-link a:hover {
+color: #fff;
+}
+.sidebar-nav-heading {
+    color: #fff;
+}
+.sidebar-nav-link a.active {
+    background: #232829;
+}
+.sidebar-nav-link a:hover {
+    background: #232829;
+}
+.am-text-truncate{
+    word-wrap: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+p{
+    padding: 10px 0;
+}
+.header .input-with-select{
+    padding:9px 0 0 0;
+}
+.header .el-input__inner,
+.header .el-input-group__append,
+.header .el-input-group__append .el-button--default{
+    background: rgb(47, 54, 56);
+}
+.header .el-input-group__append,
+.header .el-input__inner,
+.header .input-with-select,
+.header .el-input-group__append .el-button--default{
+    border:0;
+}
+.logo{
+    background-color: rgb(40, 45, 47);
+    height: 60px;
+    display: flex;
+}
+.logo img{
+    width: 65%;
+    align-self: center;
+    margin: 0 auto;
+}
+.home{
+    padding-left:10px;
+    padding-right:10px;
+    border-right:1px solid rgb(40, 45, 47);
+}
+.home:hover,
+.home:active{
+    border-right:1px solid rgb(40, 45, 47);
+}
