@@ -159,7 +159,7 @@ font-size: 16px;
 .sidebar-nav-link {
 color: #fff;
 }
-.sidebar-nav-link a {
+.sidebar-nav-link >span {
 display: block;
 color: #868E8E;
 padding: 10px 17px;
@@ -167,21 +167,22 @@ border-left: #282d2f 3px solid;
 font-size: 14px;
 cursor: pointer;
 }
-.sidebar-nav-link a.active {
+.sidebar-nav-link > span.active {
 cursor: pointer;
 border-left: #1CA2CE 3px solid;
 color: #fff;
+text-decoration-line: inherit;
 }
-.sidebar-nav-link a:hover {
+.sidebar-nav-link > span:hover {
 color: #fff;
 }
 .sidebar-nav-heading {
     color: #fff;
 }
-.sidebar-nav-link a.active {
+.sidebar-nav-link >span.active {
     background: #232829;
 }
-.sidebar-nav-link a:hover {
+.sidebar-nav-link >span:hover {
     background: #232829;
 }
 .am-text-truncate{
@@ -208,12 +209,13 @@ p{
     border:0;
 }
 .logo{
-    background-color: rgb(40, 45, 47);
+    background: rgb(40, 45, 47) url('./images/logo.png') no-repeat center center;
+    background-size: contain;
     height: 60px;
     display: flex;
 }
 .logo img{
-    width: 65%;
+    width: 100%;
     align-self: center;
     margin: 0 auto;
 }

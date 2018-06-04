@@ -22,8 +22,8 @@
                                 :titles="['未选', '已选']"
                                 :filter-method="filterMethod"
                                 filter-placeholder=""
-                                v-model="value2"
-                                :data="data2"
+                                v-model="accountMarked"
+                                :data="selectAccountList"
                             >
                             </el-transfer>
                         </el-form-item>
@@ -92,18 +92,69 @@ export default {
         checked: false,
         form: {
             gasLimit: '',
-            toAddr: '',
+            selectAccountList:[],
+            accountMarked: [],
             amount: '',
             gasEther: '',
             gasGwei: '',
         }
       };
     },
+    mounted(){
+        $http({
+            url: '/getAccountsList',
+            method: 'post',
+        }).then(function(data){
+            if(data && data.data.result === 'success'){
+                this.selectAccountList = data.data.data;
+            }
+        });
+        this.$http.post('/getGasEther').then(function (data) {
+            console.log(data)
+            if(data && data.data.result === 'success'){
+                this.gasEther = data.data.data;
+            }
+        })
+    },
     methods: {
         sendOneToMany(key){
             this.$refs['form'].validate((valid) => {
                 if (valid) {
-                    alert('submit!');
+                    if(this.checked){
+                        var ops = {
+                                fromAddr: this.$route.params.fromAddr,
+                                accountMarked: this.accountMarked,
+                                amount: this.amount,
+                                gasGwei: this.gasGwei,
+                                gasLimit: this.gasLimit
+                            }
+                    }else{
+                        var ops = {
+                                fromAddr: this.$route.params.fromAddr,
+                                accountMarked: this.accountMarked,
+                                amount: this.amount,
+                                gasEther: this.gasEther
+                            }
+                    }
+                    this.$confirm('一对多转账速度缓慢，所以请保持耐心!', '提醒', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消'
+                    }).then(({ value }) => {
+                        this.$http.post('/sendOneToMany', ops).then(function (data) {
+                            console.log(data)
+                            if(data && data.data.result === 'success'){
+                                this.$message({
+                                    type: 'success',
+                                    message: '交易发送成功'
+                                });
+                            }else{
+                                this.$message({
+                                    type: 'error',
+                                    message: '交易发送失败'
+                                });
+                            }
+                        })
+                    })
                 } else {
                     return false;
                 }

@@ -3,24 +3,24 @@
         <el-row class="container-fluid">
             <el-col :xs="20" :sm="20" :md="12">
             <div class="h2">地址：</div>
-            <p>{{ $route.params.name }}</p>
+            <p>{{ accountDetails.name }}</p>
             </el-col>
             <el-col :xs="4" :sm="4" :md="12">
             <el-button type="danger" size="mini" class="floatRight delButton" @click="delAccount();">删除账户</el-button>
             </el-col>
         </el-row>
         <el-row class="contentBox">
-            <el-col :xs="24" :sm="12" :md="8">
+            <el-col :xs="24" :sm="12" :md="8" v-for="item in accountDetails.variety">
                 <el-row class="widget">
                     <div>
                         <el-col :xs="15" :sm="15">
-                            <div class="h3">ETH</div>
-                            <p>0</p>
+                            <div class="h3">{{item.name}}</div>
+                            <p>{{item.num}}</p>
                         </el-col>
                         <el-col :xs="9" :sm="9" class="bottomBox">
-                            <el-button type="primary" size="mini" @click="oneToOneSelect();">一对一转账</el-button><br>
-                            <el-button type="primary" size="mini" @click="oneToManySelect();">一对多转账</el-button><br>
-                            <el-button type="primary" size="mini" @click="manyToOneSelect();">多对一转账</el-button>
+                            <el-button type="primary" size="mini" @click="oneToOneSelect(item);">一对一转账</el-button><br>
+                            <el-button type="primary" size="mini" @click="oneToManySelect(item);">一对多转账</el-button><br>
+                            <el-button type="primary" size="mini" @click="manyToOneSelect(item);">多对一转账</el-button>
                         </el-col>
                     </div>
                 </el-row>
@@ -31,6 +31,21 @@
 <script>
 export default {
     name: 'access',
+    data(){
+        return {
+            accountDetails: []
+        };
+    },
+    mounted(){
+        this.$http.post('/getAccountsMoney', {
+            addr: this.$route.params.name
+        }).then(function (data) {
+            console.log(data)
+            if(data && data.data.result === 'success'){
+                this.accountDetails = data.data.data;
+            }
+        })
+    },
     methods: {
         delAccount(key) {
             this.$confirm('确定要删除账户吗？账户删除是不可逆的。', '警告确认', {
@@ -38,20 +53,29 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                // this.$message({
-                //     type: 'success',
-                //     message: '你的邮箱是: ' + value
-                // });
+                this.$http.post('/delAccount', {
+                    addr: this.$route.params.name
+                }).then(function (data) {
+                    console.log(data)
+                    if(data && data.data.result === 'success'){
+                        this.$emit('refreshAccountList');
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                    }
+                })
+                
             })
         },
-        oneToOneSelect(key) {
-            this.$router.push({name: 'one-to-one', params: {fromAddr: this.$route.params.name, money: 0.01 }});
+        oneToOneSelect(item) {
+            this.$router.push({name: 'one-to-one', params: {fromAddr: this.$route.params.name, money: item.num }});
         },
-        oneToManySelect(key) {
-            this.$router.push({name: 'one-to-many', params: {fromAddr: this.$route.params.name, money: 0.01 }});
+        oneToManySelect(item) {
+            this.$router.push({name: 'one-to-many', params: {fromAddr: this.$route.params.name, money: item.num }});
         },
-        manyToOneSelect(key) {
-            this.$router.push({name: 'many-to-one', params: {toAddr: this.$route.params.name, money: 0.01 }});
+        manyToOneSelect(item) {
+            this.$router.push({name: 'many-to-one', params: {toAddr: this.$route.params.name, money: item.num }});
         }
     }
 };

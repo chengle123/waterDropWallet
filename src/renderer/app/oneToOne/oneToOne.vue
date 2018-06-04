@@ -87,11 +87,48 @@ export default {
         }
       };
     },
+    mounted(){
+        this.$http.post('/getGasEther').then(function (data) {
+            console.log(data)
+            if(data && data.data.result === 'success'){
+                this.gasEther = data.data.data;
+            }
+        })
+    },
     methods: {
         sendOneToOne(key){
             this.$refs['form'].validate((valid) => {
                 if (valid) {
-                    alert('submit!');
+                    if(this.checked){
+                        var ops = {
+                            fromAddr: this.$route.params.fromAddr,
+                            toAddr: this.toAddr,
+                            amount: this.amount,
+                            gasGwei: this.gasGwei,
+                            gasLimit: this.gasLimit
+                        }
+                    }else{
+                        var ops = {
+                            fromAddr: this.$route.params.fromAddr,
+                            toAddr: this.toAddr,
+                            amount: this.amount,
+                            gasEther: this.gasEther
+                        }
+                    }
+                    this.$http.post('/sendOneToOne', ops).then(function (data) {
+                        console.log(data)
+                        if(data && data.data.result === 'success'){
+                            this.$message({
+                                type: 'success',
+                                message: '交易成功'
+                            });
+                        }else{
+                            this.$message({
+                                type: 'error',
+                                message: '交易失败'
+                            });
+                        }
+                    })
                 } else {
                     return false;
                 }

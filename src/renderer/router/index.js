@@ -14,36 +14,41 @@ export default new Router({
         redirect: '/'
     },
     {
-      path: '/',
+      path: '/login',
       name: 'login',
       component: require('@/app/login/login.vue').default,
     },
-    // {
-    //     path: '/',
-    //     name: 'index',
-    //     component: require('@/app/index').default,
-    //     children: [
-    //         {
-    //           path: '/account/:name',
-    //           name: 'account',
-    //           component: require('@/app/account/account.vue').default
-    //         },
-    //         {
-    //           path: '/oneToOne/:fromAddr/:money',
-    //           name: 'one-to-one',
-    //           component: require('@/app/oneToOne/oneToOne.vue').default
-    //         },
-    //         {
-    //           path: '/oneToMany/:fromAddr/:money',
-    //           name: 'one-to-many',
-    //           component: require('@/app/oneToMany/oneToMany.vue').default
-    //         },
-    //         {
-    //           path: '/manyToOne/:fromAddr/:money',
-    //           name: 'many-to-one',
-    //           component: require('@/app/manyToOne/manyToOne.vue').default
-    //         }
-    //     ]
-    // }
+    {
+        path: '/',
+        name: 'index',
+        component: require('@/app/index').default,
+        children: [
+            {
+              path: '/account/:name',
+              name: 'account',
+              component: require('@/app/account/account.vue').default
+            },
+            {
+              path: '/oneToOne/:fromAddr/:money',
+              name: 'one-to-one',
+              component: require('@/app/oneToOne/oneToOne.vue').default
+            },
+            {
+              path: '/oneToMany/:fromAddr/:money',
+              name: 'one-to-many',
+              component: require('@/app/oneToMany/oneToMany.vue').default
+            },
+            {
+              path: '/manyToOne/:fromAddr/:money',
+              name: 'many-to-one',
+              component: require('@/app/manyToOne/manyToOne.vue').default
+            },
+            {
+              path: '/search/:searchtext',
+              name: 'search',
+              component: require('@/app/search/search.vue').default
+            }
+        ]
+    }
   ]
 });

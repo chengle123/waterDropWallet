@@ -2,7 +2,6 @@
     <div class="tpl-login">
         <div class="tpl-login-content">
             <div class="tpl-login-logo">
-                <img src="../images/logob.png">
             </div>
             <el-form ref="form" :model="form">
                 <el-input placeholder="请输入Key密码" v-model="password"></el-input>
@@ -17,7 +16,14 @@ export default {
     name: 'login',
     methods: {
         login(key){
-
+            this.$http.post('/login', {
+                password: this.password
+            }).then(function (data) {
+                console.log(data)
+                if(data && data.data.result === 'success'){
+                    this.$router.push('/index');
+                }
+            })
         }
     }
 };
@@ -32,13 +38,15 @@ export default {
     top:50%;
     left:50%;
     margin-left:-150px;
-    margin-top:-183px;
+    margin-top:-205px;
 }
 .tpl-login-logo {
-    max-width: 159px;
-    height: 205px;
+    max-width: 200px;
+    height: 250px;
     margin: 0 auto;
     margin-bottom: 30px;
+    background: url('../images/logob.svg') no-repeat 0 0;
+    background-size: cover;
 }
 .tpl-login-logo img{
     width:100%;
