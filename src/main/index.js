@@ -70,6 +70,12 @@ const fs = require('fs');
 const express = require('express');
 const router = express.Router();
 
+const nedb = require('nedb');
+const db = new nedb({
+  filename: '/data/keyData.db',
+  autoload: true
+});
+
 var Tx = require('ethereumjs-tx');
 var Web3 = require('web3');
 var web3;
@@ -98,7 +104,7 @@ function accountsFS(name){
 var privateKeys,keystores;
 var acc = [],
     accList = [];
-var passwordKey;// = 'le314737853.';
+var passwordKey = 'le314737853.';
 
 function init(){
     web3.eth.accounts.wallet.create();
@@ -110,26 +116,51 @@ init();
 
 // 查询账户列表与余额
 function getAccountsList(res){
-    var num=0;
+    // var num=0;
     accList = [];
     var data = web3.eth.accounts.wallet;
     if(data.length>0){
         acc = data;
-    }else{
-        keystores = accountsFS('keystores.json');
-        acc = web3.eth.accounts.wallet.decrypt(keystores, passwordKey);
-    }
-    for(var i=0;i<acc.length;i++){
-        accList.push({
-            name:acc[i].address
-        });
-        if(i == acc.length-1 && res){
-            return res.json({
-                result: 'success',
-                data: accList,
-                msg: '用户列表获取成功'
+        for(var i=0;i<acc.length;i++){
+            accList.push({
+                name:acc[i].address
             });
+            if(i == acc.length-1 && res){
+                return res.json({
+                    result: 'success',
+                    data: accList,
+                    msg: '账户列表获取成功'
+                });
+            }
         }
+    }else{
+        db.find({}, function (err, docs) {
+            console.log(docs)
+            acc = docs;
+            if(acc.length>0){
+                for(var i=0;i<acc.length;i++){
+                    web3.eth.accounts.wallet.add(acc[i].privateKey);
+                    accList.push({
+                        name:acc[i].address
+                    });
+                    if(i == acc.length-1 && res){
+                        return res.json({
+                            result: 'success',
+                            data: accList,
+                            msg: '账户列表获取成功'
+                        });
+                    }
+                }
+            }else{
+                if(res){
+                    return res.json({
+                        result: 'success',
+                        data: accList,
+                        msg: '账户列表获取成功'
+                    });
+                }
+            }
+        });
     }
 }
 // 查询账户余额
@@ -147,57 +178,91 @@ function getAccountsMoney(addr,res){
                         }
                     ]
                 },
-                msg: '用户余额获取成功'
+                msg: '账户余额获取成功'
             });
         }
     })
-}
-// 账户存入keystores.json
-function saveAccount(){
-    var keyV3 = web3.eth.accounts.wallet.encrypt(passwordKey);
-    writeFile('./','keystores.json',keyV3);
-}
-
-// 创建新账户
-function addAccount(num,res){
-    web3.eth.accounts.wallet.create(num || 1);
-    saveAccount();
-    getAccountsList();
-    if(res){
-        return res.json({
-            result: 'success',
-            data: accList,
-            msg: '用户添加成功'
-        });
-    }
-}
-
-// 导入新账户
-function importAccount(key,res){
-    web3.eth.accounts.wallet.add(key);
-    saveAccount();
-    getAccountsList();
-    if(res){
-        return res.json({
-            result: 'success',
-            data: accList,
-            msg: '用户导入成功'
-        });
-    }
 }
 
 // 删除一个账户 ps:不可恢复
 function delAccount(key,res){
     web3.eth.accounts.wallet.remove(key);
-    saveAccount();
-    getAccountsList();
-    if(res){
-        return res.json({
-            result: 'success',
-            data: accList,
-            msg: '用户删除成功'
+    db.remove({
+        address: key
+    }, (err, ret) => {
+        if(ret){
+            getAccountsList();
+            if(res){
+                return res.json({
+                    result: 'success',
+                    data: [],
+                    msg: '账户删除成功'
+                });
+            }
+        }
+    })
+}
+
+// 导入新账户
+function importAccount(key,res){
+    var account = web3.eth.accounts.wallet.add(key);
+    db.findOne({
+        address: account.address
+    }, (err, ret) => {
+        if(ret){
+            if(res){
+                return res.json({
+                    result: 'error',
+                    data: [],
+                    msg: '账户已存在'
+                });
+            }
+        }else{
+            db.insert({
+                address: account.address,
+                privateKey: account.privateKey
+            }, (err, ret) => {
+                if(ret){
+                    getAccountsList();
+                    if(res){
+                        return res.json({
+                            result: 'success',
+                            data: accList,
+                            msg: '账户导入成功'
+                        });
+                    }
+                }
+            });
+        }
+    });
+}
+
+// 创建新账户
+function addAccount(num,res){
+    var newAccount = web3.eth.accounts.wallet.create(num || 1);
+    var arr = [];
+    for(var i=0;i<newAccount.length;i++){
+        arr.push({
+            address: newAccount[i].address,
+            privateKey: newAccount[i].privateKey
         });
     }
+    var start = accList.length;
+    var end = arr.length;
+    arr.slice(start,end)
+
+    db.insert(arr, (err, ret) => {
+        if(ret){
+            getAccountsList();
+            if(res){
+                return res.json({
+                    result: 'success',
+                    data: accList,
+                    msg: '账户添加成功'
+                });
+            }
+        }
+    });
 }
 
 // 导出所有
@@ -312,13 +377,13 @@ router.post('/login', function(req, res) {
         return res.json({
             result: 'success',
             data: [],
-            msg: '用户登录成功'
+            msg: '账户登录成功'
         });
     }catch(e) {
         return res.json({
             result: 'error',
             data: [],
-            msg: '用户登录失败'
+            msg: '账户登录失败'
         });
     }
 })
@@ -329,20 +394,20 @@ router.post('/validate', function(req, res) {
             return res.json({
                 result: 'success',
                 data: [],
-                msg: '用户已登录'
+                msg: '账户已登录'
             });
         }else{
             return res.json({
                 result: 'error',
                 data: [],
-                msg: '用户未登录'
+                msg: '账户未登录'
             });
         }
 	}catch(e) {
         return res.json({
             result: 'error',
             data: [],
-            msg: '用户未登录'
+            msg: '账户未登录'
         });
 	}
 })
@@ -354,7 +419,7 @@ router.post('/getAccountsList', function(req, res) {
         return res.json({
             result: 'error',
             data: [],
-            msg: '用户列表获取失败'
+            msg: '账户列表获取失败'
         });
 	}
 })
@@ -366,7 +431,7 @@ router.post('/getAccountsMoney', function(req, res) {
         return res.json({
             result: 'error',
             data: {},
-            msg: '用户余额获取失败'
+            msg: '账户余额获取失败'
         });
 	}
 })
@@ -378,7 +443,7 @@ router.post('/addAccount', function(req, res) {
         return res.json({
             result: 'error',
             data: {},
-            msg: '用户添加失败'
+            msg: '账户添加失败'
         });
 	}
 })
@@ -390,7 +455,7 @@ router.post('/importAccount', function(req, res) {
         return res.json({
             result: 'error',
             data: {},
-            msg: '用户导入失败'
+            msg: '账户导入失败'
         });
 	}
 })
@@ -402,7 +467,7 @@ router.post('/delAccount', function(req, res) {
         return res.json({
             result: 'error',
             data: {},
-            msg: '用户删除失败'
+            msg: '账户删除失败'
         });
 	}
 })

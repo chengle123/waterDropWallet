@@ -17,10 +17,8 @@
                                 class="floatLeft"
                                 filterable
                                 :titles="['未选', '已选']"
-                                :filter-method="filterMethod"
-                                filter-placeholder=""
-                                v-model="value2"
-                                :data="data2"
+                                v-model="accountMarked"
+                                :data="form.selectAccountList"
                             >
                             </el-transfer>
                         </el-form-item>
@@ -32,20 +30,14 @@
                         <el-form-item
                             label="转账金额"
                             prop="amount"
-                            :rules="[
-                                { required: true, message: '转账金额不能为空'},
-                                { type: 'number', message: '转账金额必须为数字值'}
-                            ]"
+                            :rules="rules.amount"
                         >
                             <el-input type="amount" v-model.number="form.amount"></el-input>
                         </el-form-item>
                         <el-form-item
                             label="矿工费用"
                             prop="gasEther"
-                            :rules="[
-                                { required: true, message: '矿工费用不能为空'},
-                                { type: 'number', message: '矿工费用必须为数字值'}
-                            ]"
+                            :rules="rules.gasEther"
                             v-if="!checked"
                         >
                             <el-input type="gasEther" placeholder="ether" v-model.number="form.gasEther"></el-input>
@@ -53,10 +45,7 @@
                         <el-form-item 
                             label="自定义 Gas Price"
                             prop="gasGwei"
-                            :rules="[
-                                { required: true, message: 'Gas Price不能为空'},
-                                { type: 'number', message: 'Gas Price必须为数字值'}
-                            ]"
+                            :rules="rules.gasGwei"
                             v-if="checked"
                         >
                             <el-input type="gasGwei" placeholder="gwei" v-model.number="form.gasGwei"></el-input>
@@ -64,10 +53,7 @@
                         <el-form-item
                             label="自定义 Gas Limit"
                             prop="gasLimit"
-                            :rules="[
-                                { required: true, message: 'Gas Limit不能为空'},
-                                { type: 'number', message: 'Gas Limit必须为数字值'}
-                            ]"
+                            :rules="rules.gasLimit"
                             v-if="checked"
                         >
                             <el-input type="gasLimit" v-model.number="form.gasLimit"></el-input>
@@ -85,29 +71,95 @@
     </div>
 </template>
 <script>
+import rules from '../utils/rules'
+
 export default {
     name: 'many-to-one',
     data() {
       return {
         checked: false,
+        accountMarked:[],
         form: {
             gasLimit: '',
+            selectAccountList:[],
             toAddr: '',
             amount: '',
             gasEther: '',
             gasGwei: '',
-        }
+        },
+        rules:rules
       };
+    },
+    mounted(){
+        var _this = this;
+        this.$http.post('http://localhost:8989/getAccountsList').then(function(data){
+            if(data && data.data.result === 'success'){
+                _this.form.selectAccountList = data.data.data.map(function(item,i){
+                    return {
+                        key: i,
+                        label: item.name,
+                        disabled: item.name === _this.$route.params.fromAddr ? true : false
+                    }
+                });
+            }
+        });
+        this.$http.post('http://localhost:8989/getGasEther').then(function (data) {
+            if(data && data.data.result === 'success'){
+                _this.form.gasEther = data.data.data;
+            }
+        })
     },
     methods: {
         sendManyToOne(key){
+            var _this = this;
             this.$refs['form'].validate((valid) => {
                 if (valid) {
-                    alert('submit!');
+                    if(this.accountMarked.length==0){
+                        _this.$message({
+                            type: 'error',
+                            message: '请选择发款账户'
+                        });
+                        return;
+                    }
+                    var arr = [];
+                    for(var i=0;i<this.accountMarked.length;i++){
+                        arr.push({
+                            name: this.form.selectAccountList[this.accountMarked[i]].label
+                        });
+                    }
+                    if(this.checked){
+                        var ops = {
+                                toAddr: this.$route.params.toAddr,
+                                accountMarked: arr,
+                                amount: this.form.amount,
+                                gasGwei: this.form.gasGwei,
+                                gasLimit: this.form.gasLimit
+                            }
+                    }else{
+                        var ops = {
+                                toAddr: this.$route.params.toAddr,
+                                accountMarked: arr,
+                                amount: this.form.amount,
+                                gasEther: this.form.gasEther
+                            }
+                    }
+                    this.$http.post('http://localhost:8989/sendOneToMany', ops).then(function (data) {
+                        if(data && data.data.result === 'success'){
+                            _this.$message({
+                                type: 'success',
+                                message: '交易发送成功'
+                            });
+                        }else{
+                            _this.$message({
+                                type: 'error',
+                                message: '交易发送失败'
+                            });
+                        }
+                    })
                 } else {
                     return false;
                 }
-            }); 
+            });
         }
     }
 };

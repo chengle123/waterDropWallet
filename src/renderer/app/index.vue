@@ -4,7 +4,7 @@
             <el-col :span="6">
                 <div class="logo"></div>
             </el-col>
-            <el-col :span="18" @refreshAccountList="getAccountList">
+            <el-col :span="18">
                 <el-row>
                     <el-button type="text" class="el-icon-menu floatLeft home" v-model="isCollapse" @click="menuLeft" style="color:rgb(207, 207, 207);font-size: 34px;"></el-button>
                     <el-col :xs="13" :sm="13" :md="13">
@@ -44,7 +44,7 @@
                         <el-button icon="el-icon-upload2" round @click="importAccount">导入账户</el-button>
                     </el-col>
                 </el-row>
-                <ul class="sidebar-nav">
+                <ul class="sidebar-nav" @refresh-account-list="getAccountList">
                     <li class="sidebar-nav-link" v-for="(item, index) in accountList">
                         <span :class="{active : item.name == activeAccount.name}" @click="select(item)">
                             <span>序号：{{ index+1 }}</span>
@@ -69,12 +69,7 @@
       return {
         isCollapse: true,
         searchText:'',
-        accountList:[
-            { name: '0x5b22a90DFD4d5789f78C36408Ad2AD6F51c2a4D5'},
-            { name: '0x9bFed376f0D3fbCD68422171bE1545Bb467D64C6'},
-            { name: '0x33734985A4389eFB7Ab8d852cd5bFcFCD9c2eDc9'},
-            { name: '0xbA3e56DF740749cDD4507d854987C1Bc4D4835E3'}
-        ],
+        accountList:[],
         activeAccount:{}
       };
     },
@@ -94,8 +89,10 @@
             this.$http.post('http://localhost:8989/getAccountsList').then(function(data){
                 if(data && data.data.result === 'success'){
                     _this.accountList = data.data.data;
-                    _this.activeAccount = _this.accountList[0];
-                    _this.$router.push({name: 'account',params:{name:_this.activeAccount.name}});
+                    if(_this.accountList.length > 0){
+                        _this.activeAccount = _this.accountList[0];
+                        _this.$router.push({name: 'account',params:{name:_this.activeAccount.name}});
+                    }
                 }
             });
         },
@@ -142,6 +139,11 @@
                             type: 'success',
                             message: '账户添加成功'
                         });
+                    }else{
+                        _this.$message({
+                            type: 'error',
+                            message: data.data.msg
+                        });
                     }
                 })
             })
@@ -161,6 +163,11 @@
                         _this.$message({
                             type: 'success',
                             message: '账户添加成功'
+                        });
+                    }else{
+                        _this.$message({
+                            type: 'error',
+                            message: data.data.msg
                         });
                     }
                 })

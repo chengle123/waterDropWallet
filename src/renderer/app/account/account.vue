@@ -33,32 +33,28 @@ export default {
     name: 'access',
     data(){
         return {
-            accountDetails: []
+            accountDetails: {}
         };
     },
     watch: {
         '$route' (to, from) {
+            this.init();
+        }
+    },
+    mounted(){
+        this.init();
+    },
+    methods: {
+        init(){
             var _this = this;
             this.$http.post('http://localhost:8989/getAccountsMoney', {
-                addr: _this.$route.params.name
+                addr: this.$route.params.name
             }).then(function (data) {
                 if(data && data.data.result === 'success'){
                     _this.accountDetails = data.data.data;
                 }
             })
-        }
-    },
-    mounted(){
-        var _this = this;
-        this.$http.post('http://localhost:8989/getAccountsMoney', {
-            addr: this.$route.params.name
-        }).then(function (data) {
-            if(data && data.data.result === 'success'){
-                _this.accountDetails = data.data.data;
-            }
-        })
-    },
-    methods: {
+        },
         delAccount(key) {
             var _this = this;
             this.$confirm('确定要删除账户吗？账户删除是不可逆的。', '警告确认', {
@@ -70,12 +66,13 @@ export default {
                     addr: _this.$route.params.name
                 }).then(function (data) {
                     if(data && data.data.result === 'success'){
-                        _this.$emit('refreshAccountList');
                         _this.$message({
                             type: 'success',
                             message: '删除成功'
                         });
+                        _this.$emit('refresh-account-list');
                     }
+                        console.log(_this)
                 })
                 
             })

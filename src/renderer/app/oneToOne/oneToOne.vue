@@ -20,10 +20,7 @@
                     <el-form-item
                         label="转账金额"
                         prop="amount"
-                        :rules="[
-                            { required: true, message: '转账金额不能为空'},
-                            { type: 'number', message: '转账金额必须为数字值'}
-                        ]"
+                        :rules="rules.amount"
                     >
                         <el-input type="amount" v-model.number="form.amount"></el-input>
                         {{ $route.params.money - amount }}
@@ -31,10 +28,7 @@
                     <el-form-item
                         label="矿工费用"
                         prop="gasEther"
-                        :rules="[
-                            { required: true, message: '矿工费用不能为空'},
-                            { type: 'number', message: '矿工费用必须为数字值'}
-                        ]"
+                        :rules="rules.gasEther"
                         v-if="!checked"
                     >
                         <el-input type="gasEther" placeholder="ether" v-model.number="form.gasEther"></el-input>
@@ -42,10 +36,7 @@
                     <el-form-item 
                         label="自定义 Gas Price"
                         prop="gasGwei"
-                        :rules="[
-                            { required: true, message: 'Gas Price不能为空'},
-                            { type: 'number', message: 'Gas Price必须为数字值'}
-                        ]"
+                        :rules="rules.gasGwei"
                         v-if="checked"
                     >
                         <el-input type="gasGwei" placeholder="gwei" v-model.number="form.gasGwei"></el-input>
@@ -53,10 +44,7 @@
                     <el-form-item
                         label="自定义 Gas Limit"
                         prop="gasLimit"
-                        :rules="[
-                            { required: true, message: 'Gas Limit不能为空'},
-                            { type: 'number', message: 'Gas Limit必须为数字值'}
-                        ]"
+                        :rules="rules.gasLimit"
                         v-if="checked"
                     >
                         <el-input type="gasLimit" v-model.number="form.gasLimit"></el-input>
@@ -73,6 +61,8 @@
     </div>
 </template>
 <script>
+import rules from '../utils/rules'
+
 export default {
     name: 'one-to-one',
     data() {
@@ -84,14 +74,15 @@ export default {
             amount: '',
             gasEther: '',
             gasGwei: '',
-        }
+        },
+        rules:rules
       };
     },
     mounted(){
         var _this = this;
         this.$http.post('http://localhost:8989/getGasEther').then(function (data) {
             if(data && data.data.result === 'success'){
-                _this.gasEther = data.data.data;
+                _this.form.gasEther = data.data.data;
             }
         })
     },
@@ -100,20 +91,27 @@ export default {
             var _this = this;
             this.$refs['form'].validate((valid) => {
                 if (valid) {
+                    if(!this.form.toAddr){
+                        _this.$message({
+                            type: 'error',
+                            message: '请填写收款账户'
+                        });
+                        return;
+                    }
                     if(this.checked){
                         var ops = {
                             fromAddr: this.$route.params.fromAddr,
-                            toAddr: this.toAddr,
-                            amount: this.amount,
-                            gasGwei: this.gasGwei,
-                            gasLimit: this.gasLimit
+                            toAddr: this.form.toAddr,
+                            amount: this.form.amount,
+                            gasGwei: this.form.gasGwei,
+                            gasLimit: this.form.gasLimit
                         }
                     }else{
                         var ops = {
                             fromAddr: this.$route.params.fromAddr,
-                            toAddr: this.toAddr,
-                            amount: this.amount,
-                            gasEther: this.gasEther
+                            toAddr: this.form.toAddr,
+                            amount: this.form.amount,
+                            gasEther: this.form.gasEther
                         }
                     }
                     this.$http.post('http://localhost:8989/sendOneToOne', ops).then(function (data) {
