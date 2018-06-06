@@ -101,23 +101,24 @@ export default {
       };
     },
     mounted(){
+        var _this = this;
         $http({
-            url: '/getAccountsList',
+            url: 'http://localhost:8989/getAccountsList',
             method: 'post',
         }).then(function(data){
             if(data && data.data.result === 'success'){
-                this.selectAccountList = data.data.data;
+                _this.selectAccountList = data.data.data;
             }
         });
-        this.$http.post('/getGasEther').then(function (data) {
-            console.log(data)
+        this.$http.post('http://localhost:8989/getGasEther').then(function (data) {
             if(data && data.data.result === 'success'){
-                this.gasEther = data.data.data;
+                _this.gasEther = data.data.data;
             }
         })
     },
     methods: {
         sendOneToMany(key){
+            var _this = this;
             this.$refs['form'].validate((valid) => {
                 if (valid) {
                     if(this.checked){
@@ -140,15 +141,14 @@ export default {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消'
                     }).then(({ value }) => {
-                        this.$http.post('/sendOneToMany', ops).then(function (data) {
-                            console.log(data)
+                        _this.$http.post('http://localhost:8989/sendOneToMany', ops).then(function (data) {
                             if(data && data.data.result === 'success'){
-                                this.$message({
+                                _this.$message({
                                     type: 'success',
                                     message: '交易发送成功'
                                 });
                             }else{
-                                this.$message({
+                                _this.$message({
                                     type: 'error',
                                     message: '交易发送失败'
                                 });

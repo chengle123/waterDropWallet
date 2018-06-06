@@ -36,30 +36,42 @@ export default {
             accountDetails: []
         };
     },
+    watch: {
+        '$route' (to, from) {
+            var _this = this;
+            this.$http.post('http://localhost:8989/getAccountsMoney', {
+                addr: _this.$route.params.name
+            }).then(function (data) {
+                if(data && data.data.result === 'success'){
+                    _this.accountDetails = data.data.data;
+                }
+            })
+        }
+    },
     mounted(){
-        this.$http.post('/getAccountsMoney', {
+        var _this = this;
+        this.$http.post('http://localhost:8989/getAccountsMoney', {
             addr: this.$route.params.name
         }).then(function (data) {
-            console.log(data)
             if(data && data.data.result === 'success'){
-                this.accountDetails = data.data.data;
+                _this.accountDetails = data.data.data;
             }
         })
     },
     methods: {
         delAccount(key) {
+            var _this = this;
             this.$confirm('确定要删除账户吗？账户删除是不可逆的。', '警告确认', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                this.$http.post('/delAccount', {
-                    addr: this.$route.params.name
+                _this.$http.post('http://localhost:8989/delAccount', {
+                    addr: _this.$route.params.name
                 }).then(function (data) {
-                    console.log(data)
                     if(data && data.data.result === 'success'){
-                        this.$emit('refreshAccountList');
-                        this.$message({
+                        _this.$emit('refreshAccountList');
+                        _this.$message({
                             type: 'success',
                             message: '删除成功'
                         });

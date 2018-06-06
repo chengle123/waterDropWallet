@@ -33,14 +33,14 @@ export default {
       };
     },
     mounted(){
-        this.$http.post('/getSearch', {
+        var _this = this;
+        this.$http.post('http://localhost:8989/getSearch', {
             text: search
         }).then(function (data) {
-            console.log(data)
             if(data && data.data.result === 'success'){
-                this.searchDetails = data.data.data;
+                _this.searchDetails = data.data.data;
             }else{
-                this.searchDetails = [];
+                _this.searchDetails = [];
             }
         })
     },

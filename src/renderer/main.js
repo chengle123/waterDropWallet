@@ -16,3 +16,6 @@ new Vue({
   store,
   template: '<App/>'
 }).$mount('#app')
+
+const express = require('express');
+console.log(express)

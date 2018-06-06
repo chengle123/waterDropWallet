@@ -16,12 +16,12 @@ export default {
     name: 'login',
     methods: {
         login(key){
-            this.$http.post('/login', {
-                password: this.password
+            var _this = this;
+            this.$http.post('http://localhost:8989/login',{
+                password: _this.password
             }).then(function (data) {
-                console.log(data)
                 if(data && data.data.result === 'success'){
-                    this.$router.push('/index');
+                    _this.$router.push('index');
                 }
             })
         }

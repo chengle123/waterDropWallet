@@ -88,15 +88,16 @@ export default {
       };
     },
     mounted(){
-        this.$http.post('/getGasEther').then(function (data) {
-            console.log(data)
+        var _this = this;
+        this.$http.post('http://localhost:8989/getGasEther').then(function (data) {
             if(data && data.data.result === 'success'){
-                this.gasEther = data.data.data;
+                _this.gasEther = data.data.data;
             }
         })
     },
     methods: {
         sendOneToOne(key){
+            var _this = this;
             this.$refs['form'].validate((valid) => {
                 if (valid) {
                     if(this.checked){
@@ -115,15 +116,14 @@ export default {
                             gasEther: this.gasEther
                         }
                     }
-                    this.$http.post('/sendOneToOne', ops).then(function (data) {
-                        console.log(data)
+                    this.$http.post('http://localhost:8989/sendOneToOne', ops).then(function (data) {
                         if(data && data.data.result === 'success'){
-                            this.$message({
+                            _this.$message({
                                 type: 'success',
                                 message: '交易成功'
                             });
                         }else{
-                            this.$message({
+                            _this.$message({
                                 type: 'error',
                                 message: '交易失败'
                             });

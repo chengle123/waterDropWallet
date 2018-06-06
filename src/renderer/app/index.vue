@@ -79,24 +79,23 @@
       };
     },
     mounted(){
-        this.$http.post('/validate').then(function (data) {
+        var _this = this;
+        this.$http.post('http://localhost:8989/validate').then(function (data) {
             if(data && data.data.result === 'success'){
-                this.getAccountList();
+                _this.getAccountList();
             }else{
-                this.$router.push('/login');
+                _this.$router.push('login');
             }
         })
     },
     methods: {
         getAccountList(){
-            $http({
-                url: '/getAccountsList',
-                method: 'post',
-            }).then(function(data){
+            var _this = this;
+            this.$http.post('http://localhost:8989/getAccountsList').then(function(data){
                 if(data && data.data.result === 'success'){
-                    this.accountList = data.data.data;
-                    this.activeAccount = this.accountList[0];
-                    this.$router.push({name: 'account',params:{name:this.activeAccount.name}});
+                    _this.accountList = data.data.data;
+                    _this.activeAccount = _this.accountList[0];
+                    _this.$router.push({name: 'account',params:{name:_this.activeAccount.name}});
                 }
             });
         },
@@ -113,12 +112,12 @@
             }
         },
         exportAccount(key) {
-            this.$http.post('/exportAccount', {
+            var _this = this;
+            this.$http.post('http://localhost:8989/exportAccount', {
                 type: key
             }).then(function (data) {
-                console.log(data)
                 if(data && data.data.result === 'success'){
-                    this.$message({
+                    _this.$message({
                         type: 'success',
                         message: '导出成功'
                     });
@@ -126,20 +125,20 @@
             })
         },
         addAccount(key) {
+            var _this = this;
             this.$prompt('ps：账户默认用登录密码加密。', '添加账户', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 inputPattern: /^[0-9]*[1-9][0-9]*$/,
                 inputErrorMessage: '请填写0以上的整数'
             }).then(({ value }) => {
-                this.$http.post('/addAccount', {
+                _this.$http.post('http://localhost:8989/addAccount', {
                     num: value
                 }).then(function (data) {
-                    console.log(data)
                     if(data && data.data.result === 'success'){
-                        this.accountList = data.data.data;
-                        this.activeAccount = this.accountList[0];
-                        this.$message({
+                        _this.accountList = data.data.data;
+                        _this.activeAccount = _this.accountList[0];
+                        _this.$message({
                             type: 'success',
                             message: '账户添加成功'
                         });
@@ -148,18 +147,18 @@
             })
         },
         importAccount(key) {
+            var _this = this;
             this.$prompt('请输入账户秘钥：', '导入账户', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(({ value }) => {
-                this.$http.post('/importAccount', {
+                _this.$http.post('http://localhost:8989/importAccount', {
                     key: value
                 }).then(function (data) {
-                    console.log(data)
                     if(data && data.data.result === 'success'){
-                        this.accountList = data.data.data;
-                        this.activeAccount = this.accountList[0];
-                        this.$message({
+                        _this.accountList = data.data.data;
+                        _this.activeAccount = _this.accountList[0];
+                        _this.$message({
                             type: 'success',
                             message: '账户添加成功'
                         });

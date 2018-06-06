@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    name: 'ceshi1'
+    name: 'waterDropWallet'
   }
 </script>
 
