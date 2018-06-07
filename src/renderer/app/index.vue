@@ -99,9 +99,6 @@ import $ from 'jquery'
             this.$http.post('http://localhost:8989/getAccountsList').then(function(data){
                 if(data && data.data.result === 'success'){
                     _this.accountList = data.data.data;
-                    if(_this.accountList.length > 0){
-                        _this.activeAccount = _this.accountList[0];
-                    }
                 }
             });
         },
@@ -147,7 +144,6 @@ import $ from 'jquery'
                 }).then(function (data) {
                     if(data && data.data.result === 'success'){
                         _this.accountList = data.data.data;
-                        _this.activeAccount = _this.accountList[0];
                         _this.$message({
                             type: 'success',
                             message: '账户添加成功'
@@ -172,7 +168,6 @@ import $ from 'jquery'
                 }).then(function (data) {
                     if(data && data.data.result === 'success'){
                         _this.accountList = data.data.data;
-                        _this.activeAccount = _this.accountList[0];
                         _this.$message({
                             type: 'success',
                             message: '账户添加成功'

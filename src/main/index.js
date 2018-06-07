@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, dialog } from 'electron'
 
 /**
  * Set `__static` path to static files in production
@@ -18,10 +18,10 @@ function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 563,
+    minHeight: 563,
+    minWidth: 1000,
     useContentSize: true,
-    width: 1000,
-    webPreferences: {webSecurity: false},
+    webPreferences: {webSecurity: false}
   })
   mainWindow.setMenu(null)
   mainWindow.loadURL(winURL)
@@ -85,24 +85,9 @@ if (typeof web3 !== 'undefined') {
   web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/7GJLSGo2mDCi2e9BK3dj"));//https://mainnet.infura.io/YORUTOKEN
 }
 
-function writeFile(url,name,data) {
-    fs.writeFile(url+name, JSON.stringify(data), function() {
-        console.log(`打包${name}`);
-    });
-}
-// 查找文件，寻找是否存在密钥文件===================================
-function accountsFS(name){
-    try{
-        return JSON.parse(fs.readFileSync(`./${name}`,"utf-8"));
-    }catch(e) {
-        writeFile('./',name,[]);
-        return [];
-    }   
-}
-
 var acc = [],
     accList = [];
-var passwordKey = 'le314737853.';
+var passwordKey;
 
 function init(){
     web3.eth.accounts.wallet.create();
@@ -259,21 +244,41 @@ function addAccount(num,res){
 }
 
 // 导出所有
-function exportAccount(type,res){
-    var url = app.getAppPath().replace(/\\/g, "/");
+function exportAccount(url,type,res){
     if(type == 'keystores'){
         var keystores = web3.eth.accounts.wallet.encrypt(passwordKey);
-        for(var i = 0;i<keystores.length;i++){
-            var date = new Date(),
-                getFullYear = date.getFullYear(),
-                getMonth = date.getMonth()+1,
-                getDate = date.getDate(),
-                getHours = date.getHours(),
-                getMinutes = date.getMinutes(),
-                getSeconds = date.getSeconds();
-            writeFile('./keystore/',`${date.getTime()}---${keystores[i].address}`,keystores[i]);
-        }
-        url += '/keystore/';
+        fs.exists(url+'/keystore/', function(exists){
+            if(!exists){
+                fs.mkdir(url+'/keystore',function(err){
+                    console.log(err)
+                    if(!err){
+                        for(var i = 0;i<keystores.length;i++){
+                            writeFile(url+'/keystore/',`0x${keystores[i].address}`,keystores[i]);
+                        }
+                        url += '/keystore/';
+                        return res.json({
+                            result: 'success',
+                            data: {
+                                url: url
+                            },
+                            msg: '导出成功'
+                        });
+                    }
+                }); 
+            }else{
+                for(var i = 0;i<keystores.length;i++){
+                    writeFile(url+'/keystore/',`0x${keystores[i].address}`,keystores[i]);
+                }
+                url += '/keystore/';
+                return res.json({
+                    result: 'success',
+                    data: {
+                        url: url
+                    },
+                    msg: '导出成功'
+                });
+            }
+        });
     }
     if(type == 'privatekey'){
         var data = web3.eth.accounts.wallet;
@@ -284,16 +289,23 @@ function exportAccount(type,res){
                 address: data[i].address
             });
         }
-        writeFile('./','privateKeys.json',arr);
-        url += '/privateKeys.json'
+        writeFile(url,'/privateKeys.json',arr);
+        url += '/privateKeys.json';
+        return res.json({
+            result: 'success',
+            data: {
+                url: url
+            },
+            msg: '导出成功'
+        });
     }
     
-    return res.json({
-        result: 'success',
-        data: {
-            url: url
-        },
-        msg: '导出成功'
+}
+
+function writeFile(url,name,data) {
+    fs.writeFile(url+name, JSON.stringify(data), function() {
+        console.log(url+name)
+        console.log(`打包${name}`);
     });
 }
 
@@ -601,7 +613,14 @@ router.post('/sendManyToOne', function(req, res) {
 
 router.post('/exportAccount', function(req, res) {
     try{
-        exportAccount(req.body.type,res);
+        var url = dialog.showOpenDialog({
+            properties: ['openFile', 'openDirectory'],
+            title: '请选择导出位置',
+            defaultPath : app.getPath('desktop')
+        },function(filePaths){
+            exportAccount(filePaths[0].replace(/\\/g, "/"),req.body.type,res);
+        });
+        // 
     }catch(e) {
         return res.json({
             result: 'error',

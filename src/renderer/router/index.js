@@ -44,7 +44,7 @@ export default new Router({
               component: require('@/app/oneToMany/oneToMany.vue').default
             },
             {
-              path: '/manyToOne/:fromAddr/:money',
+              path: '/manyToOne/:toAddr/:money',
               name: 'many-to-one',
               component: require('@/app/manyToOne/manyToOne.vue').default
             },

@@ -159,6 +159,7 @@ export default {
                                     type: 'success',
                                     message: '交易发送成功'
                                 });
+                                _this.$router.push({name: 'account',params:{name:_this.$route.params.fromAddr}});
                             }else{
                                 _this.$message({
                                     type: 'error',
