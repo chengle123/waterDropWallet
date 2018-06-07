@@ -2,7 +2,7 @@
     <el-row class="app">
         <el-row class="header">
             <el-col :span="6">
-                <div class="logo"></div>
+                <router-link to="/home"><div class="logo"></div></router-link>
             </el-col>
             <el-col :span="18">
                 <el-row>
@@ -54,9 +54,7 @@
                 </ul>
             </el-col>
             <el-col :span="isCollapse?18:24" class="right">
-                <div>
-                    <router-view></router-view>
-                </div>
+                <router-view></router-view>
             </el-col>
         </el-row>
     </el-row>  
@@ -64,6 +62,8 @@
 </template>
 
 <script>
+import $ from 'jquery'
+
   export default {
     data() {
       return {
@@ -78,12 +78,22 @@
         this.$http.post('http://localhost:8989/validate').then(function (data) {
             if(data && data.data.result === 'success'){
                 _this.getAccountList();
+                _this.$router.push('home');
             }else{
                 _this.$router.push('login');
             }
         })
+        this.init();
+        $(window).resize(function() {
+            _this.init();
+        });
     },
     methods: {
+        init(){
+            var leftH = $('.left').height();
+            var buttonBoxH = $('.left .buttonBox').height();
+            $('.left .sidebar-nav').css({height:(leftH-buttonBoxH-32)+'px',overflow:'auto'});
+        },
         getAccountList(){
             var _this = this;
             this.$http.post('http://localhost:8989/getAccountsList').then(function(data){
@@ -91,7 +101,6 @@
                     _this.accountList = data.data.data;
                     if(_this.accountList.length > 0){
                         _this.activeAccount = _this.accountList[0];
-                        _this.$router.push({name: 'account',params:{name:_this.activeAccount.name}});
                     }
                 }
             });
@@ -114,9 +123,13 @@
                 type: key
             }).then(function (data) {
                 if(data && data.data.result === 'success'){
+                    _this.$alert('前往以下地址查看！' + data.data.data.url, '导出成功', {
+                        confirmButtonText: '确定'
+                    });
+                }else{
                     _this.$message({
-                        type: 'success',
-                        message: '导出成功'
+                        type: 'error',
+                        message: '导出失败或KEY密码错误'
                     });
                 }
             })
@@ -146,7 +159,7 @@
                         });
                     }
                 })
-            })
+            }).catch(() => {});
         },
         importAccount(key) {
             var _this = this;
@@ -171,8 +184,18 @@
                         });
                     }
                 })
-            })
+            }).catch(() => {});
         }
     }
   }
 </script>
+<style>
+    .el-dropdown-menu__item{
+        padding:0 0;
+    }
+    .el-dropdown-menu__item a{
+        display: block;
+        height: 100%;
+        padding: 0 20px;
+    }
+</style>

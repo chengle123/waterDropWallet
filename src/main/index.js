@@ -23,7 +23,7 @@ function createWindow () {
     width: 1000,
     webPreferences: {webSecurity: false},
   })
-
+  mainWindow.setMenu(null)
   mainWindow.loadURL(winURL)
 
   mainWindow.on('closed', () => {
@@ -85,8 +85,6 @@ if (typeof web3 !== 'undefined') {
   web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/7GJLSGo2mDCi2e9BK3dj"));//https://mainnet.infura.io/YORUTOKEN
 }
 
-var o_n=0,
-    n_o=0;
 function writeFile(url,name,data) {
     fs.writeFile(url+name, JSON.stringify(data), function() {
         console.log(`打包${name}`);
@@ -101,22 +99,18 @@ function accountsFS(name){
         return [];
     }   
 }
-var privateKeys,keystores;
+
 var acc = [],
     accList = [];
 var passwordKey = 'le314737853.';
 
 function init(){
     web3.eth.accounts.wallet.create();
-    // keystores = accountsFS('keystores.json');
-    // web3.eth.accounts.wallet.decrypt(keystores, passwordKey);
-    // getAccountsList();
 }
 init();
 
 // 查询账户列表与余额
 function getAccountsList(res){
-    // var num=0;
     accList = [];
     var data = web3.eth.accounts.wallet;
     if(data.length>0){
@@ -241,16 +235,15 @@ function importAccount(key,res){
 function addAccount(num,res){
     var newAccount = web3.eth.accounts.wallet.create(num || 1);
     var arr = [];
-    for(var i=0;i<newAccount.length;i++){
+    var start = accList.length;
+    for(var i=start;i<newAccount.length;i++){
         arr.push({
             address: newAccount[i].address,
             privateKey: newAccount[i].privateKey
         });
     }
-    var start = accList.length;
     var end = arr.length;
     arr.slice(start,end)
-
     db.insert(arr, (err, ret) => {
         if(ret){
             getAccountsList();
@@ -267,7 +260,9 @@ function addAccount(num,res){
 
 // 导出所有
 function exportAccount(type,res){
+    var url = app.getAppPath().replace(/\\/g, "/");
     if(type == 'keystores'){
+        var keystores = web3.eth.accounts.wallet.encrypt(passwordKey);
         for(var i = 0;i<keystores.length;i++){
             var date = new Date(),
                 getFullYear = date.getFullYear(),
@@ -278,6 +273,7 @@ function exportAccount(type,res){
                 getSeconds = date.getSeconds();
             writeFile('./keystore/',`${date.getTime()}---${keystores[i].address}`,keystores[i]);
         }
+        url += '/keystore/';
     }
     if(type == 'privatekey'){
         var data = web3.eth.accounts.wallet;
@@ -289,11 +285,14 @@ function exportAccount(type,res){
             });
         }
         writeFile('./','privateKeys.json',arr);
+        url += '/privateKeys.json'
     }
     
     return res.json({
         result: 'success',
-        data: {},
+        data: {
+            url: url
+        },
         msg: '导出成功'
     });
 }
@@ -475,6 +474,11 @@ router.post('/delAccount', function(req, res) {
 router.post('/getSearch', function(req, res) {
     try{
         // 暂无
+        return res.json({
+            result: 'success',
+            data: {},
+            msg: '暂无搜索功能'
+        });
 	}catch(e) {
         return res.json({
             result: 'error',

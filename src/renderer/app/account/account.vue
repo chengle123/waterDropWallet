@@ -33,7 +33,8 @@ export default {
     name: 'access',
     data(){
         return {
-            accountDetails: {}
+            accountDetails: {},
+            load:''
         };
     },
     watch: {
@@ -47,13 +48,28 @@ export default {
     methods: {
         init(){
             var _this = this;
+            this.loading('正在加载...');
             this.$http.post('http://localhost:8989/getAccountsMoney', {
                 addr: this.$route.params.name
             }).then(function (data) {
+                _this.load.close();
                 if(data && data.data.result === 'success'){
                     _this.accountDetails = data.data.data;
+                }else{
+                    _this.$message({
+                        type: 'error',
+                        message: data.data.msg
+                    });
                 }
             })
+        },
+        loading(text){
+            this.load = this.$loading({
+                lock: true,
+                text: text,
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
         },
         delAccount(key) {
             var _this = this;
@@ -72,10 +88,8 @@ export default {
                         });
                         _this.$emit('refresh-account-list');
                     }
-                        console.log(_this)
                 })
-                
-            })
+            }).catch(() => {});
         },
         oneToOneSelect(item) {
             this.$router.push({name: 'one-to-one', params: {fromAddr: this.$route.params.name, money: item.num }});

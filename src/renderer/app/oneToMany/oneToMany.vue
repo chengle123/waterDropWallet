@@ -120,6 +120,13 @@ export default {
                         });
                         return;
                     }
+                    if(this.$route.params.money <= (this.form.amount*this.accountMarked.length)){
+                        _this.$message({
+                            type: 'error',
+                            message: '账户余额不足'
+                        });
+                        return;
+                    }
                     var arr = [];
                     for(var i=0;i<this.accountMarked.length;i++){
                         arr.push({
@@ -142,7 +149,7 @@ export default {
                                 gasEther: this.form.gasEther
                             }
                     }
-                    this.$confirm('一对多转账速度缓慢，所以请保持耐心!', '提醒', {
+                    this.$confirm('一对多转账速度缓慢，所以请保持耐心，请勿多次操作!', '提醒', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消'
                     }).then(({ value }) => {
@@ -159,7 +166,7 @@ export default {
                                 });
                             }
                         })
-                    })
+                    }).catch(() => {});
                 } else {
                     return false;
                 }

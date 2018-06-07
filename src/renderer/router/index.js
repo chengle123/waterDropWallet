@@ -24,6 +24,11 @@ export default new Router({
         component: require('@/app/index').default,
         children: [
             {
+              path: '/home',
+              name: 'home',
+              component: require('@/app/home/home.vue').default
+            },
+            {
               path: '/account/:name',
               name: 'account',
               component: require('@/app/account/account.vue').default

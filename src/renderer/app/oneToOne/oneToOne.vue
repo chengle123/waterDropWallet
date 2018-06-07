@@ -23,7 +23,6 @@
                         :rules="rules.amount"
                     >
                         <el-input type="amount" v-model.number="form.amount"></el-input>
-                        {{ $route.params.money - amount }}
                     </el-form-item>
                     <el-form-item
                         label="矿工费用"
@@ -75,7 +74,8 @@ export default {
             gasEther: '',
             gasGwei: '',
         },
-        rules:rules
+        rules:rules,
+        load:''
       };
     },
     mounted(){
@@ -87,6 +87,14 @@ export default {
         })
     },
     methods: {
+        loading(text){
+            this.load = this.$loading({
+                lock: true,
+                text: text,
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+        },
         sendOneToOne(key){
             var _this = this;
             this.$refs['form'].validate((valid) => {
@@ -95,6 +103,13 @@ export default {
                         _this.$message({
                             type: 'error',
                             message: '请填写收款账户'
+                        });
+                        return;
+                    }
+                    if(this.$route.params.money <= this.form.amount){
+                        _this.$message({
+                            type: 'error',
+                            message: '账户余额不足'
                         });
                         return;
                     }
@@ -114,12 +129,15 @@ export default {
                             gasEther: this.form.gasEther
                         }
                     }
+                    this.loading('正在交易中...');
                     this.$http.post('http://localhost:8989/sendOneToOne', ops).then(function (data) {
+                        _this.load.close();
                         if(data && data.data.result === 'success'){
                             _this.$message({
                                 type: 'success',
                                 message: '交易成功'
                             });
+                            _this.$router.push({name: 'account',params:{name:_this.$route.params.fromAddr}});
                         }else{
                             _this.$message({
                                 type: 'error',

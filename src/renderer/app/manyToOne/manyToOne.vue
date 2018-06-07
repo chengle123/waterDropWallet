@@ -87,7 +87,8 @@ export default {
             gasEther: '',
             gasGwei: '',
         },
-        rules:rules
+        rules:rules,
+        load:''
       };
     },
     mounted(){
@@ -98,7 +99,7 @@ export default {
                     return {
                         key: i,
                         label: item.name,
-                        disabled: item.name === _this.$route.params.fromAddr ? true : false
+                        disabled: item.name === _this.$route.params.toAddr ? true : false
                     }
                 });
             }
@@ -110,6 +111,14 @@ export default {
         })
     },
     methods: {
+        loading(text){
+            this.load = this.$loading({
+                lock: true,
+                text: text,
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+        },
         sendManyToOne(key){
             var _this = this;
             this.$refs['form'].validate((valid) => {
@@ -143,12 +152,15 @@ export default {
                                 gasEther: this.form.gasEther
                             }
                     }
-                    this.$http.post('http://localhost:8989/sendOneToMany', ops).then(function (data) {
+                    this.loading('交易发送中...');
+                    this.$http.post('http://localhost:8989/sendManyToOne', ops).then(function (data) {
+                        _this.load.close();
                         if(data && data.data.result === 'success'){
                             _this.$message({
                                 type: 'success',
                                 message: '交易发送成功'
                             });
+                            _this.$router.push({name: 'account',params:{name:_this.$route.params.toAddr}});
                         }else{
                             _this.$message({
                                 type: 'error',
