@@ -44,7 +44,7 @@
                         <el-button icon="el-icon-upload2" round @click="importAccount">导入账户</el-button>
                     </el-col>
                 </el-row>
-                <ul class="sidebar-nav" @refresh-account-list="getAccountList">
+                <ul class="sidebar-nav" >
                     <li class="sidebar-nav-link" v-for="(item, index) in accountList">
                         <span :class="{active : item.name == activeAccount.name}" @click="select(item)">
                             <span>序号：{{ index+1 }}</span>
@@ -63,6 +63,7 @@
 
 <script>
 import $ from 'jquery'
+import { bus } from './bus.js'
 
   export default {
     data() {
@@ -87,6 +88,9 @@ import $ from 'jquery'
         $(window).resize(function() {
             _this.init();
         });
+        bus.$on('refresh-account-list',function(){
+            _this.getAccountList();
+        })
     },
     methods: {
         init(){

@@ -29,6 +29,8 @@
     </div>
 </template>
 <script>
+import { bus } from '../bus.js'
+
 export default {
     name: 'access',
     data(){
@@ -60,6 +62,7 @@ export default {
                         type: 'error',
                         message: data.data.msg
                     });
+                    _this.$router.push('/home');
                 }
             })
         },
@@ -86,7 +89,7 @@ export default {
                             type: 'success',
                             message: '删除成功'
                         });
-                        _this.$emit('refresh-account-list');
+                        bus.$emit('refresh-account-list');
                     }
                 })
             }).catch(() => {});

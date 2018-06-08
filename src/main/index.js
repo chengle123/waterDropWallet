@@ -12,7 +12,7 @@ let mainWindow
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
-
+  
 function createWindow () {
   /**
    * Initial window options
@@ -82,11 +82,10 @@ var web3;
 if (typeof web3 !== 'undefined') {
   web3 = new Web3(web3.currentProvider);
 } else {
-  web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/7GJLSGo2mDCi2e9BK3dj"));//https://mainnet.infura.io/YORUTOKEN
+  web3 = new Web3(new Web3.providers.HttpProvider(process.env.NODE_ENV === 'development' ? "https://ropsten.infura.io/7GJLSGo2mDCi2e9BK3dj" : "https://mainnet.infura.io/YORUTOKEN"));
 }
 
-var acc = [],
-    accList = [];
+var accList = [];
 var passwordKey;
 
 function init(){
@@ -99,30 +98,31 @@ function getAccountsList(res){
     accList = [];
     var data = web3.eth.accounts.wallet;
     if(data.length>0){
-        acc = data;
-        for(var i=0;i<acc.length;i++){
-            accList.push({
-                name:acc[i].address
-            });
-            if(i == acc.length-1 && res){
-                return res.json({
-                    result: 'success',
-                    data: accList,
-                    msg: '账户列表获取成功'
+        for(var i in data){
+            if(data[i]){
+                accList.push({
+                    name:data[i].address
                 });
             }
+        }
+        accList = accList.slice(0,data.length);
+        if(res){
+            return res.json({
+                result: 'success',
+                data: accList,
+                msg: '账户列表获取成功'
+            });
         }
     }else{
         db.find({}, function (err, docs) {
             console.log(docs)
-            acc = docs;
-            if(acc.length>0){
-                for(var i=0;i<acc.length;i++){
-                    web3.eth.accounts.wallet.add(acc[i].privateKey);
+            if(docs.length>0){
+                for(var i=0;i<docs.length;i++){
+                    web3.eth.accounts.wallet.add(docs[i].privateKey);
                     accList.push({
-                        name:acc[i].address
+                        name:docs[i].address
                     });
-                    if(i == acc.length-1 && res){
+                    if(i == docs.length-1 && res){
                         return res.json({
                             result: 'success',
                             data: accList,
@@ -165,21 +165,30 @@ function getAccountsMoney(addr,res){
 
 // 删除一个账户 ps:不可恢复
 function delAccount(key,res){
-    web3.eth.accounts.wallet.remove(key);
-    db.remove({
-        address: key
-    }, (err, ret) => {
-        if(ret){
-            getAccountsList();
-            if(res){
-                return res.json({
-                    result: 'success',
-                    data: [],
-                    msg: '账户删除成功'
-                });
+    if(web3.eth.accounts.wallet.remove(key)){
+        db.remove({
+            address: key
+        },{}, (err, ret) => {
+            if(ret){
+                getAccountsList();
+                if(res){
+                    return res.json({
+                        result: 'success',
+                        data: [],
+                        msg: '账户删除成功'
+                    });
+                }
             }
+        })
+    }else{
+        if(res){
+            return res.json({
+                result: 'error',
+                data: [],
+                msg: '没有这个账户'
+            });
         }
-    })
+    }
 }
 
 // 导入新账户
