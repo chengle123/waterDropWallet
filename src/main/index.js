@@ -72,7 +72,7 @@ const router = express.Router();
 
 const nedb = require('nedb');
 const db = new nedb({
-  filename: '/data/keyData.db',
+  filename: './data/keyData.db',
   autoload: true
 });
 
