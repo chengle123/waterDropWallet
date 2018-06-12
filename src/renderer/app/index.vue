@@ -52,6 +52,7 @@
                         </span>
                     </li>
                 </ul>
+                <div class="version">版本：V {{ version }}</div>
             </el-col>
             <el-col :span="isCollapse?18:24" class="right">
                 <router-view></router-view>
@@ -64,6 +65,7 @@
 <script>
 import $ from 'jquery'
 import { bus } from './bus.js'
+import pkg from '../../../package.json';
 
   export default {
     data() {
@@ -71,7 +73,8 @@ import { bus } from './bus.js'
         isCollapse: true,
         searchText:'',
         accountList:[],
-        activeAccount:{}
+        activeAccount:{},
+        version: pkg.version
       };
     },
     mounted(){
@@ -96,7 +99,7 @@ import { bus } from './bus.js'
         init(){
             var leftH = $('.left').height();
             var buttonBoxH = $('.left .buttonBox').height();
-            $('.left .sidebar-nav').css({height:(leftH-buttonBoxH-32)+'px',overflow:'auto'});
+            $('.left .sidebar-nav').css({height:(leftH-buttonBoxH-52)+'px',overflow:'auto'});
         },
         getAccountList(){
             var _this = this;
@@ -196,5 +199,11 @@ import { bus } from './bus.js'
         display: block;
         height: 100%;
         padding: 0 20px;
+    }
+    .app .version{
+        color:#fff;
+        font-size:12px;
+        text-align: center;
+        margin-top:3px;
     }
 </style>
