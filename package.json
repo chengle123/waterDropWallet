@@ -21,6 +21,7 @@
     "productName": "waterDropWallet",
     "appId": "org.simulatedgreg.electron-vue",
     "directories": {
+      "buildResources": "build/icons",
       "output": "build"
     },
     "files": [

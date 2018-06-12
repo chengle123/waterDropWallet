@@ -67,12 +67,14 @@ app.on('ready', () => {
 
 
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const router = express.Router();
 
 const nedb = require('nedb');
+const USERDATA_PATH = app.getPath('userData');
 const db = new nedb({
-  filename: './data/keyData.db',
+  filename: path.join(USERDATA_PATH, `keyData.db`),
   autoload: true
 });
 
