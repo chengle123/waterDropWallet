@@ -20,6 +20,12 @@
   "build": {
     "productName": "waterDropWallet",
     "appId": "org.simulatedgreg.electron-vue",
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://gitlab.com"
+      }
+    ],
     "directories": {
       "output": "build"
     },

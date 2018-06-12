@@ -8,14 +8,28 @@
                 <p style="color:#fff;">（Key密码用于账户加解密）</p>
                 <el-button type="primary" @click="login" size="small">提交</el-button>
             </el-form>
+            <span id="version">版本：V {{ version }}</span>
         </div>
     </div>
 </template>
 <script>
+import pkg from '../../../../package.json';
 export default {
     name: 'login',
+    data(){
+        return {
+            version: pkg.version
+        };
+    },
     methods: {
         login(key){
+            if(!this.password){
+                this.$message({
+                    type: 'error',
+                    message: '请填写Key密码'
+                });
+                return;
+            }
             var _this = this;
             this.$http.post('http://localhost:8989/login',{
                 password: _this.password
@@ -63,5 +77,12 @@ export default {
 }
 .tpl-login p{
     padding:20px 0;
+}
+#version{
+    color:#fff;
+    font-size:12px;
+    position: fixed;
+    bottom:10px;
+    left:10px;
 }
 </style>

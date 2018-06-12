@@ -10,7 +10,7 @@
             </el-col>
         </el-row>
         <el-row class="contentBox">
-            <el-col :xs="24" :sm="12" :md="8" v-for="item in accountDetails.variety">
+            <el-col :xs="24" :sm="12" :md="12" :lg="8" v-for="item in accountDetails.variety">
                 <el-row class="widget">
                     <div>
                         <el-col :xs="15" :sm="15">
