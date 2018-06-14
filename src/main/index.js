@@ -6,7 +6,7 @@ const log = require('electron-log');
 
 // Autoupdater
 autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
+autoUpdater.logger.transports.file.level = 'info';//debug
 log.info('App starting...');
 
 // autoUpdater.requestHeaders = { "PRIVATE-TOKEN": "Personal access Token" };
