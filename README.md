@@ -41,11 +41,11 @@
 ---
 钱包交流群：109346212
 
-[1]: https://github.com/chengle123/waterDropWallet/blob/master/img/1.png?raw=true
-[2]: https://github.com/chengle123/waterDropWallet/blob/master/img/2.png?raw=true
-[3]: https://github.com/chengle123/waterDropWallet/blob/master/img/3.png?raw=true
-[4]: https://github.com/chengle123/waterDropWallet/blob/master/img/4.png?raw=true
-[5]: https://github.com/chengle123/waterDropWallet/blob/master/img/5.png?raw=true
-[6]: https://github.com/chengle123/waterDropWallet/blob/master/img/6.png?raw=true
-[7]: https://github.com/chengle123/waterDropWallet/blob/master/img/7.png?raw=true
-[8]: https://github.com/chengle123/waterDropWallet/blob/master/img/8.png?raw=true
+[1]: https://raw.githubusercontent.com/chengle123/waterDropWallet/master/img/1.png
+[2]: https://raw.githubusercontent.com/chengle123/waterDropWallet/master/img/2.png
+[3]: https://raw.githubusercontent.com/chengle123/waterDropWallet/master/img/3.png
+[4]: https://raw.githubusercontent.com/chengle123/waterDropWallet/master/img/4.png
+[5]: https://raw.githubusercontent.com/chengle123/waterDropWallet/master/img/5.png
+[6]: https://raw.githubusercontent.com/chengle123/waterDropWallet/master/img/6.png
+[7]: https://raw.githubusercontent.com/chengle123/waterDropWallet/master/img/7.png
+[8]: https://raw.githubusercontent.com/chengle123/waterDropWallet/master/img/8.png
