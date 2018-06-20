@@ -9,11 +9,11 @@ autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';//debug
 log.info('App starting...');
 
-// autoUpdater.requestHeaders = { "PRIVATE-TOKEN": "Personal access Token" };
+// autoUpdater.requestHeaders = { "PRIVATE-TOKEN": "BoTNutG2Dd4Uwds8JPAQ" };
 // autoUpdater.autoDownload = true;
 // autoUpdater.setFeedURL({
 //     provider: "generic",
-//     url: "https://gitlab.com/_example_repo_/-/jobs/artifacts/master/raw/dist?job=build"
+//     url: "https://gitlab.com/chengle/-/jobs/artifacts/master/raw/dist?job=build"
 // });
 
 function sendStatusToWindow(msg) {
